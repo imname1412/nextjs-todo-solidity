@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import ButtonConnect from "../components/ButtonConnect";
 import TodoList from "../components/TodoList";
@@ -45,11 +45,29 @@ export default function Home() {
     }
   };
 
-  const getAllTask = async () => {};
+  const getAllTask = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provide = new ethers.providers.Web3Provider(ethereum);
+        const signer = provide.getSigner();
+        const TodoContract = new ethers.Contract(
+          TaskContractAddress,
+          TaskAbi.abi,
+          signer
+        );
+        const request = await TodoContract.getMyTask();
+        setTasks(request);
+        console.log("get all tasks");
+      } else {
+        console.log("ethreum object does not exist!");
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
 
-  const addTask = async (e) => {
-    e.preventDefault();
-
+  const addTask = async () => {
     let task = {
       taskText: input,
       isDelete: false,
@@ -62,7 +80,7 @@ export default function Home() {
         const signer = provide.getSigner();
         const TodoContract = new ethers.Contract(
           TaskContractAddress,
-          TaskAbi,
+          TaskAbi.abi,
           signer
         );
         //* addTask(string memory _taskText, bool isDeleted)
@@ -72,6 +90,7 @@ export default function Home() {
         ).catch((err) => console.log(err));
         setTasks((prev) => [...prev, task]);
         console.log("Added task");
+        setInput("");
       } else {
         console.log("ethreum object does not exist!");
       }
@@ -81,6 +100,11 @@ export default function Home() {
   };
 
   const delTask = async () => {};
+
+  useEffect(() => {
+    connectWallet();
+    getAllTask();
+  }, []);
 
   return (
     <div className="bg-slate-700 min-h-[100vh] flex items-center justify-center">
@@ -95,13 +119,21 @@ export default function Home() {
         {isUserLoggedIn ? (
           <>
             {correctNetwork ? (
-              <TodoList currentAccount={currentAccount} />
+              <TodoList
+                currentAccount={currentAccount}
+                input={input}
+                setInput={setInput}
+                addTask={addTask}
+                myTask={tasks}
+              />
             ) : (
               <h1>Wrong Network 💡</h1>
             )}
           </>
         ) : (
-          <ButtonConnect connectWallet={connectWallet} />
+          <>
+            <ButtonConnect connectWallet={connectWallet} />
+          </>
         )}
       </div>
     </div>
