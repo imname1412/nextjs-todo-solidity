@@ -56,8 +56,8 @@ export default function Home() {
           TaskAbi.abi,
           signer
         );
-        const request = await TodoContract.getMyTask();
-        setTasks(request);
+        let allTask = await TodoContract.getMyTask();
+        setTasks(allTask);
         console.log("get all tasks");
       } else {
         console.log("ethreum object does not exist!");
@@ -90,7 +90,33 @@ export default function Home() {
         ).catch((err) => console.log(err));
         setTasks((prev) => [...prev, task]);
         console.log("Added task");
-        setInput("");
+      } else {
+        console.log("ethreum object does not exist!");
+      }
+    } catch (error) {
+      throw error;
+    }
+    setInput("");
+  };
+
+  const delTask = async (id) => {
+    const decimalId = +id._hex;
+    console.log(decimalId)
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provide = new ethers.providers.Web3Provider(ethereum);
+        const signer = provide.getSigner();
+        const TodoContract = new ethers.Contract(
+          TaskContractAddress,
+          TaskAbi.abi,
+          signer
+        );
+        const delTaskTx = await TodoContract.delTask(decimalId, true);
+        console.log("successfully deleted: ", delTaskTx);
+
+        let allTask = await TodoContract.getMyTask();
+        setTasks(allTask);
       } else {
         console.log("ethreum object does not exist!");
       }
@@ -98,8 +124,6 @@ export default function Home() {
       throw error;
     }
   };
-
-  const delTask = async () => {};
 
   useEffect(() => {
     connectWallet();
@@ -125,6 +149,7 @@ export default function Home() {
                 setInput={setInput}
                 addTask={addTask}
                 myTask={tasks}
+                delTask={delTask}
               />
             ) : (
               <h1>Wrong Network 💡</h1>

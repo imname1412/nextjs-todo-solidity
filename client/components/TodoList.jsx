@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import Task from "./Task";
 
-const TodoList = ({ currentAccount, input, setInput, addTask, myTask }) => {
+const TodoList = ({
+  currentAccount,
+  input,
+  setInput,
+  addTask,
+  myTask,
+  delTask,
+}) => {
   const digestAddress = (addr) => {
     const frontAddr = addr.slice(0, 5);
     const backAddr = addr.slice(-5);
@@ -27,7 +34,7 @@ const TodoList = ({ currentAccount, input, setInput, addTask, myTask }) => {
             type="text"
             placeholder="your task..."
             className="outline-1 outline-purple-300 mr-2 h-10 w-full pl-2 rounded text-gray-500 font-medium"
-            defaultValue={input}
+            value={input}
             onChange={(e) => setInput(e.target.value)}
           />
         </div>
@@ -39,7 +46,12 @@ const TodoList = ({ currentAccount, input, setInput, addTask, myTask }) => {
       </div>
       <div className="w-full my-2" />
       {myTask.map((task, index) => (
-        <Task key={index} taskItem={task.taskText} />
+        <Task
+          key={index}
+          taskItem={task.taskText}
+          delTask={delTask}
+          id={task.id}
+        />
       ))}
       <div className="absolute -top-4 -right-4 text-2xl">🚀</div>
     </div>
