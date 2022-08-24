@@ -13,6 +13,7 @@ contract TodoContract {
   }
 
   Task[] private tasks;
+
   mapping(uint => address) taskToOwner;
 
   function addTask(string memory _taskText, bool isDeleted) external {
@@ -22,7 +23,7 @@ contract TodoContract {
     emit AddTask(msg.sender ,taskId);
   }
 
-  function getMyTask() external view returns (Task[] memory) {
+  function getMyTasks() external view returns (Task[] memory) {
     Task[] memory bufferTask = new Task[](tasks.length);
     uint counter = 0;
     //Loop to find the owner address
@@ -34,17 +35,17 @@ contract TodoContract {
     }
     //But don't want to return all length of task array just msg.semder's tasks
     Task[] memory ownerTasks = new Task[](counter);
-    for (uint i=0; i<bufferTask.length; i++) {
+    for (uint i=0; i<counter; i++) {
       ownerTasks[i] = bufferTask[i];
     }
 
     return ownerTasks;
   }
 
-  function delTask(uint _taskId, bool isDeleted) external {
-    if (taskToOwner[_taskId] == msg.sender) {
-      tasks[_taskId].isDeleted = isDeleted;
-      emit DeleteTask(_taskId, isDeleted);
+  function delTask(uint _taskId, bool mybool) external {
+    if (msg.sender == taskToOwner[_taskId]) {
+      tasks[_taskId].isDeleted = mybool;
+      emit DeleteTask(_taskId, mybool);
     }
   } 
   

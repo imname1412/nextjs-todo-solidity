@@ -1,12 +1,23 @@
-##### TODO APP 
+#### TODO APP
+
+###### stack
 
 `Nextjs`
 `Tailwind`
 `Solidity`
 `Truffle`
 
+### Deploying
 
-##### Used
-`truffle init`
-`truffle dashboard`
-`truffle migrate --network dashboard`
+```
+truffle init
+truffle dashboard
+truffle migrate --network dashboard
+```
+
+### Frontend
+
+```
+npm run build
+mpm start
+```

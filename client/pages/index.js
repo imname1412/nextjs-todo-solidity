@@ -4,7 +4,7 @@ import ButtonConnect from "../components/ButtonConnect";
 import TodoList from "../components/TodoList";
 import TaskAbi from "../../sm-contract/build/contracts/TodoContract.json";
 import { TaskContractAddress } from "../config";
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 
 export default function Home() {
   const [correctNetwork, setCorrectNetwork] = useState(false);
@@ -56,8 +56,9 @@ export default function Home() {
           TaskAbi.abi,
           signer
         );
-        let allTask = await TodoContract.getMyTask();
+        let allTask = await TodoContract.getMyTasks();
         setTasks(allTask);
+        console.log(allTask);
         console.log("get all tasks");
       } else {
         console.log("ethreum object does not exist!");
@@ -100,8 +101,7 @@ export default function Home() {
   };
 
   const delTask = async (id) => {
-    const decimalId = +id._hex;
-    console.log(decimalId)
+    console.log(id);
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -112,11 +112,12 @@ export default function Home() {
           TaskAbi.abi,
           signer
         );
-        const delTaskTx = await TodoContract.delTask(decimalId, true);
+        const delTaskTx = await TodoContract.delTask(id, true);
         console.log("successfully deleted: ", delTaskTx);
 
-        let allTask = await TodoContract.getMyTask();
+        let allTask = await TodoContract.getMyTasks();
         setTasks(allTask);
+        console.log(allTask);
       } else {
         console.log("ethreum object does not exist!");
       }
